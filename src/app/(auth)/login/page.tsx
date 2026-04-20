@@ -7,15 +7,17 @@ import Link from "next/link"
 import { LoginFormData, loginSchema } from "@/schemas/authSchemas"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { Truck, Shield, Facebook } from "lucide-react"
+import { Truck, Shield, Facebook, Loader2 } from "lucide-react"
 import Imge from "../../../../public/2e5810ff3e-e750761ebcd4ae5907db.png"
-import { getSession, signIn } from "next-auth/react"
+import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { jwtDecode } from "jwt-decode"
 import { login } from "@/services/authServices"
+import { useState } from "react"
 
 export default function page() {
   const router = useRouter();
+  const [loading, setLoading] = useState(false)
 
   const form = useForm({
     resolver: zodResolver(loginSchema),
@@ -27,6 +29,7 @@ export default function page() {
 
 
   const handleSubmit = async (data: LoginFormData) => {
+    setLoading(true)
     const apiData = await login(data)
 
     if (apiData.message === "success") {
@@ -40,6 +43,7 @@ export default function page() {
       redirect: false,
     });
     if (response?.ok) {
+      setLoading(false)
       toast.success("Login successfully", {
         style: {
           background: "#22a74f",
@@ -49,6 +53,7 @@ export default function page() {
       });
       router.push("/")
     } else {
+      setLoading(false)
       toast.error("Invalid email or password", {
         style: {
           background: "#ef4444",
@@ -189,9 +194,10 @@ export default function page() {
             </div>
 
             <Button
-              type="submit"
-              className="cursor-pointer w-full h-10 flex items-center justify-center gap-2 text-white font-semibold text-xs py-3 px-4 rounded-lg transition-all duration-200 hover:opacity-90 hover:scale-[0.99] mt-2 bg-[#22a74f]">
+              disabled={loading}
+              type="submit" className="cursor-pointer w-full h-10 flex items-center justify-center gap-2 text-white font-semibold text-xs py-3 px-4 rounded-lg transition-all duration-200 hover:opacity-90 hover:scale-[0.99] mt-2 bg-[#22a74f]">
               Sign In
+              {loading && <Loader2 className="animate-spin" />}
             </Button>
           </form>
 

@@ -10,10 +10,11 @@ import { register } from "@/services/authServices"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { useState } from "react"
-import { Star, Truck, Shield, UserPlus, Facebook } from "lucide-react"
+import { Star, Truck, Shield, UserPlus, Facebook, Loader2 } from "lucide-react"
 
 export default function page() {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
 
@@ -48,8 +49,10 @@ export default function page() {
       toast.error("Please agree to the Terms of Service and Privacy Policy");
       return;
     }
+    setLoading(true);
     const response = await register(data);
     if (response?.message === "success") {
+      setLoading(false);
       toast.success("Registered successfully", {
         style: {
           background: "#22a74f",
@@ -60,6 +63,7 @@ export default function page() {
 
       router.push("/login");
     } else {
+      setLoading(false);
       toast.error("Registration failed. Please try again.", {
         style: {
           background: "#ef4444",
@@ -307,9 +311,10 @@ export default function page() {
             </div>
 
             <Button
+              disabled={loading}
               type="submit"
               className="cursor-pointer w-full flex items-center justify-center gap-2 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 hover:opacity-90 hover:scale-[0.99] mt-2 bg-[#22a74f]">
-              <UserPlus size={18} />
+              {loading ? <Loader2 className="animate-spin" /> : <UserPlus size={18} />}
               Create My Account
             </Button>
           </form>
