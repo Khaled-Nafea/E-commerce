@@ -60,7 +60,7 @@ export default function page() {
 
       router.push("/login");
     } else {
-      toast.error("Please agree to the Terms of Service and Privacy Policy", {
+      toast.error("Registration failed. Please try again.", {
         style: {
           background: "#ef4444",
           color: "white",
